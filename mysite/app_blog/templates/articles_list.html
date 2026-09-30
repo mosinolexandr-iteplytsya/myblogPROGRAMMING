@@ -1,35 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Публікації</title>
-</head>
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% spaceless %}
 <body>
-    <ol class="breadcrumb">
-    <li><a href="/">Головна</a></li>
-    <li><a href="{% url 'articles-list' %}">Публікації</a></li>
-    {% if category %}
-        <li>{{ category }}</li>
-    {% endif %}
-    </ol>
-    {% if category %} {{ category }} {% endif %}
+    <div class="container">
+        <!-- Кнопки навігації як у публікації -->
+        <ol class="breadcrumb">
+            <li><a href="/">Головна</a></li>
+            {% if category %}
+                <li><a href="{% url 'articles-list' %}">Публікації</a></li>
+                <li class="active">{{ category }}</li>
+            {% else %}
+                <li class="active">Публікації</li>
+            {% endif %}
+        </ol>
 
-    {% for item in items %}
-    <div class="articles-row">
-            <a href="{{ item.get_absolute_url }}">
-                 <h4>{{ item.title }}</h4>
-            </a>
-            <h5>
-                  {{ item.pub_date|date:"j E Y"|safe|linebreaks }}
-            </h5>
-            <p>
-                  {{ item.description|safe|escape|striptags|truncatewords_html:32 }}
-            </p>
+        <h1>Персональний блог</h1>
+        <h3>Публікації</h3>
+
+        {% for item in items %}
+        <div class="articles-row">
+            <h4><a href="{{ item.get_absolute_url }}">{{ item.title }}</a></h4>
+            <h5>{{ item.pub_date|date:"j F Y" }}</h5>
+            <p>{{ item.description|safe|escape|striptags|truncatewords_html:32 }}</p>
+
+            {% if item.images.all %}
             <div class="container-image">
-                 <img class="img" src="{{ item.images.all.0.image.url }}" alt="" />
+                <img src="{{ item.images.all.0.image.url }}" alt="{{ item.title }}" />
             </div>
-            <div class='clearfix'></div>
+            {% endif %}
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </body>
-</html>
+<h1>Публікації</h1>
+<br/>
+{% if category %} {{ category }} {% endif %}
+
+{% for item in items %}
+<div class="articles-row">
+    <a href="{{ item.get_absolute_url }}">
+        <h4>{{ item.title }}</h4>
+    </a>
+    <h5>
+        {{ item.pub_date|date:"j E Y"|safe|linebreaks }}
+    </h5>
+    <p>
+        {{ item.description|safe|escape|striptags|truncatewords_html:32 }}
+    </p>
+    <div class="container-image">
+        <img class="img" src="{{ item.images.all.0.image.url }}" alt=""/>
+    </div>
+    <div class='clearfix'></div>
+</div>
+{% endfor %}
+{% endspaceless %}
+{% endblock %}
